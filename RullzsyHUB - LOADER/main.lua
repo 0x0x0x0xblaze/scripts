@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
 local ScriptTab = Window:CreateTab("List Scripts", 4483362458)
 
 -- Section
-ScriptTab:CreateSection("🟢 TOTAL MAP: 10")
+ScriptTab:CreateSection("🟢 TOTAL MAP: 14")
 
 -- Script 1
 ScriptTab:CreateButton({
@@ -102,5 +102,77 @@ ScriptTab:CreateButton({
     Callback = function()
         Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT PARGOY...", Duration=4})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20PARGOY/main.lua"))()
+    end
+})
+
+-- Script 11
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT SIBUATAN",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading SIBUATAN...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20SIBUATAN/main.lua"))()
+    end
+})
+
+-- Script 12
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT YNTKTS",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading YNTKTS...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20YNTKTS/main.lua"))()
+    end
+})
+
+-- Script 13
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT ARUNIKA",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading ARUNIKA...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20ARUNIKA/main.lua"))()
+    end
+})
+
+-- Script 14
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT PENGANGGURAN",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading PENGANGGURAN...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20PENGANGGURAN/main.lua"))()
+    end
+})
+
+-- Script 15
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT YACAPE",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading YACAPE...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20YACAPE/main.lua"))()
+    end
+})
+
+-- Script 16
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT SAKAHAYANG",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading SAKAHAYANG...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20SAKAHAYANG/main.lua"))()
+    end
+})
+
+-- Script 17
+ScriptTab:CreateButton({
+    Name = "🟠 MOUNT WASABI (BESOK AJA MAU TURU)",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading WASABI...", Duration=4})
+        -- loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20WASABI/main.lua"))()
+    end
+})
+
+-- Script 18
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT BILEK",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading BILEK...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20BILEK/main.lua"))()
     end
 })
