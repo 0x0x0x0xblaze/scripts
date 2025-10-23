@@ -84,9 +84,9 @@ end
 -- API
 -------------------------------------------------------------
 local API_CONFIG = {
-    base_url = "https://rullzsyhub.my.id/",
+    base_url = "https://panel.0xtunggereung.rullzsyhub.my.id/",
     validate_endpoint = "/validate.php",
-    main_script_url = "https://raw.githubusercontent.com/RullzsyHUB/roblox-scripts/refs/heads/main/RullzsyHUB%20-%20LOADER/main.lua"
+    main_script_url = "https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20LOADER/main.lua"
 }
 
 local function safeHttpRequest(url, method, data, headers)
@@ -230,6 +230,7 @@ local Window = Rayfield:CreateWindow({
    Icon = "key",
    LoadingTitle = "Created By RullzsyHUB",
    LoadingSubtitle = "Follow TikTok: @rullzsy99",
+   Theme = "Amethyst",
    ConfigurationSaving = {
        Enabled = false
    }
@@ -425,3 +426,4 @@ AuthTab:CreateButton({
 -------------------------------------------------------------
 -- AUTH UI - END
 -------------------------------------------------------------
+
