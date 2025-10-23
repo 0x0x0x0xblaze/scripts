@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
 local ScriptTab = Window:CreateTab("List Scripts", 4483362458)
 
 -- Section
-ScriptTab:CreateSection("🟢 TOTAL MAP: 9")
+ScriptTab:CreateSection("🟢 TOTAL MAP: 10")
 
 -- Script 1
 ScriptTab:CreateButton({
@@ -93,5 +93,14 @@ ScriptTab:CreateButton({
     Callback = function()
         Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT KAWAH EXPEDITION PRO...", Duration=4})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20FUNNY/main.lua"))()
+    end
+})
+
+-- Script 10
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT PARGOY",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT PARGOY...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20PARGOY/main.lua"))()
     end
 })
