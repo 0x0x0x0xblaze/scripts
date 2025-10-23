@@ -1,21 +1,16 @@
--------------------------------------------------------------
--- LOAD LIBRARY UI
--------------------------------------------------------------
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/RullzsyHUB/roblox-scripts/refs/heads/main/UI%20Liblary/Rayfield.lua'))()
+-- Load Liblary UI
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--------------------------------------------------------------
--- WINDOW PROCESS
--------------------------------------------------------------
+-- Window Process
 local Window = Rayfield:CreateWindow({
-   Name = "RullzsyHUB | MOUNT PARGOY",
+   Name = "RullzsyHUB | MOUNT YAHAYUK",
    Icon = "braces",
    LoadingTitle = "Created By RullzsyHUB",
    LoadingSubtitle = "Follow Tiktok: @rullzsy99",
+   Theme = "Amethyst",
 })
 
--------------------------------------------------------------
--- TAB MENU
--------------------------------------------------------------
+-- Tab Menu
 local AccountTab = Window:CreateTab("Account", "user")
 local BypassTab = Window:CreateTab("Bypass", "shield")
 local AutoWalkTab = Window:CreateTab("Auto Walk", "bot")
@@ -24,9 +19,7 @@ local RunAnimationTab = Window:CreateTab("Run Animation", "person-standing")
 local UpdateTab = Window:CreateTab("Update Script", "file")
 local CreditsTab = Window:CreateTab("Credits", "scroll-text")
 
--------------------------------------------------------------
--- SERVICES
--------------------------------------------------------------
+-- Services
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
@@ -35,10 +28,7 @@ local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local VirtualUser = game:GetService("VirtualUser")
 
-
--------------------------------------------------------------
--- IMPORT
--------------------------------------------------------------
+-- Import
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
@@ -46,22 +36,19 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local setclipboard = setclipboard or toclipboard
 local LocalPlayer = Players.LocalPlayer
 
-
-
--------------------------------------------------------------
--- FILE SYSTEM CONFIGURATION
--------------------------------------------------------------
--- Check if authenticated
+-- Auth Check
 if not getgenv().AuthComplete then
     warn("[MAIN] Not authenticated! Please run auth script first.")
     return
 end
 
+
+
 -------------------------------------------------------------
 -- ACCOUNT TAB
 -------------------------------------------------------------
 local API_CONFIG = {
-    base_url = "https://rullzsyhub.my.id/",
+    base_url = "https://panel.0xtunggereung.rullzsyhub.my.id/",
     get_user_endpoint = "get_user.php",
 }
 
@@ -381,14 +368,13 @@ BypassTab:CreateToggle({
 
 
 
-
 -------------------------------------------------------------
 -- AUTO WALK
 -------------------------------------------------------------
 -----| AUTO WALK VARIABLES |-----
 -- Setup folder save file json
 local mainFolder = "RullzsyHUB"
-local jsonFolder = mainFolder .. "/js_mount_pargoy"
+local jsonFolder = mainFolder .. "/json_mount_yahayuk_patch_new_001"
 if not isfolder(mainFolder) then
     makefolder(mainFolder)
 end
@@ -397,15 +383,16 @@ if not isfolder(jsonFolder) then
 end
 
 -- Server URL and JSON checkpoint file list
-local baseURL = "https://raw.githubusercontent.com/RullzsyHUB/roblox-scripts-json/refs/heads/main/json_mount_pargoy/"
+local baseURL = "https://raw.githubusercontent.com/0x0x0x0xblaze/json/refs/heads/main/json_mount_yahayuk/"
 local jsonFiles = {
-    "spawnpoint.json",
-    "checkpoint_1.json",
+    "spawnpoint_1.json",
+    "spawnpoint_2.json",
+	"spawnpoint_3.json",
+	"checkpoint_1.json",
 	"checkpoint_2.json",
 	"checkpoint_3.json",
 	"checkpoint_4.json",
 	"checkpoint_5.json",
-    "checkpoint_6.json",
 }
 
 -- Variables to control auto walk status
@@ -446,6 +433,12 @@ local leftFootstep = true
 local isFlipped = false
 local FLIP_SMOOTHNESS = 0.05
 local currentFlipRotation = CFrame.new()
+
+-- NEW: Auto Respawn
+local autoRespawnEnabled = false
+local characterReadyEvent = Instance.new("BindableEvent")
+local isRespawning = false
+
 -------------------------------------------------------------
 
 -----| AUTO WALK FUNCTIONS |-----
@@ -813,88 +806,14 @@ local function startPlayback(data, onComplete)
     end)
 end
 
--- Function to run the auto walk sequence from start to finish
-local function startAutoWalkSequence()
-    currentCheckpoint = 0
 
-    local function playNext()
-        if not autoLoopEnabled then return end
-        
-        currentCheckpoint = currentCheckpoint + 1
-        if currentCheckpoint > #jsonFiles then
-            if loopingEnabled then
-                Rayfield:Notify({
-                    Title = "Auto Walk",
-                    Content = "Semua checkpoint selesai! Looping dari awal...",
-                    Duration = 3,
-                    Image = "repeat"
-                })
-                task.wait(1)
-                startAutoWalkSequence()
-            else
-                autoLoopEnabled = false
-                Rayfield:Notify({
-                    Title = "Auto Walk",
-                    Content = "Auto walk selesai! Semua checkpoint sudah dilewati.",
-                    Duration = 5,
-                    Image = "check-check"
-                })
-            end
-            return
-        end
-
-        local checkpointFile = jsonFiles[currentCheckpoint]
-
-        local ok, path = EnsureJsonFile(checkpointFile)
-        if not ok then
-            Rayfield:Notify({
-                Title = "Error",
-                Content = "Failed to download: ",
-                Duration = 5,
-                Image = "ban"
-            })
-            autoLoopEnabled = false
-            return
-        end
-
-        local data = loadCheckpoint(checkpointFile)
-        if data and #data > 0 then
-            Rayfield:Notify({
-                Title = "Auto Walk (Automatic)",
-                Content = "Auto walk berhasil di jalankan",
-                Duration = 2,
-                Image = "bot"
-            })
-            task.wait(0.5)
-            startPlayback(data, playNext)
-        else
-            Rayfield:Notify({
-                Title = "Error",
-                Content = "Error loading: " .. checkpointFile,
-                Duration = 5,
-                Image = "ban"
-            })
-            autoLoopEnabled = false
-        end
-    end
-
-    playNext()
-end
-
--- Function to run manual auto walk with looping
-local function startManualAutoWalkSequence(startCheckpoint)
-    currentCheckpoint = startCheckpoint - 1
+local function startLoopFromCheckpoint(checkpointIndex)
+    currentCheckpoint = checkpointIndex - 1
     isManualMode = true
     autoLoopEnabled = true
 
     local function walkToStartIfNeeded(data)
         if not character or not character:FindFirstChild("HumanoidRootPart") then
-            Rayfield:Notify({
-                Title = "Auto Walk (Manual)",
-                Content = "Character belum siap (HRP tidak ditemukan).",
-                Duration = 3,
-                Image = "ban"
-            })
             return false
         end
 
@@ -907,32 +826,13 @@ local function startManualAutoWalkSequence(startCheckpoint)
         local distance = (hrp.Position - startPos).Magnitude
 
         if distance > 150 then
-            Rayfield:Notify({
-                Title = "Auto Walk (Manual)",
-                Content = string.format("Terlalu jauh (%.0f studs). Maks 150 studs untuk memulai.", distance),
-                Duration = 4,
-                Image = "alert-triangle"
-            })
             autoLoopEnabled = false
             isManualMode = false
             return false
         end
 
-        Rayfield:Notify({
-            Title = "Auto Walk (Manual)",
-            Content = string.format("Menuju titik awal... (%.0f studs)", distance),
-            Duration = 3,
-            Image = "walk"
-        })
-
         local humanoidLocal = character:FindFirstChildOfClass("Humanoid")
         if not humanoidLocal then
-            Rayfield:Notify({
-                Title = "Auto Walk (Manual)",
-                Content = "Humanoid tidak ditemukan, gagal berjalan.",
-                Duration = 3,
-                Image = "ban"
-            })
             autoLoopEnabled = false
             isManualMode = false
             return false
@@ -958,24 +858,12 @@ local function startManualAutoWalkSequence(startCheckpoint)
         end
 
         if reached then
-            Rayfield:Notify({
-                Title = "Auto Walk (Manual)",
-                Content = "Sudah sampai titik awal. Memulai playback...",
-                Duration = 2,
-                Image = "play"
-            })
             return true
         else
             if reachedConnection then
                 reachedConnection:Disconnect()
                 reachedConnection = nil
             end
-            Rayfield:Notify({
-                Title = "Auto Walk (Manual)",
-                Content = "Gagal mencapai titik awal (timeout atau dibatalkan).",
-                Duration = 3,
-                Image = "ban"
-            })
             autoLoopEnabled = false
             isManualMode = false
             return false
@@ -988,24 +876,38 @@ local function startManualAutoWalkSequence(startCheckpoint)
         currentCheckpoint = currentCheckpoint + 1
         if currentCheckpoint > #jsonFiles then
             if loopingEnabled then
-                Rayfield:Notify({
-                    Title = "Auto Walk (Manual)",
-                    Content = "Semua checkpoint selesai! Looping dari checkpoint 1...",
-                    Duration = 3,
-                    Image = "repeat"
-                })
-                task.wait(1)
-                currentCheckpoint = 0
-                playNext()
+                -- Respawn dan loop lagi
+                if autoRespawnEnabled then
+                    Rayfield:Notify({
+                        Title = "Auto Walk",
+                        Content = "Semua checkpoint selesai! Respawn...",
+                        Duration = 2,
+                        Image = "repeat"
+                    })
+                    
+                    isRespawning = true
+                    if humanoid then
+                        humanoid.Health = 0
+                    end
+                    
+                    -- Wait untuk respawn selesai
+                    local connection = characterReadyEvent.Event:Connect(function()
+                        connection:Disconnect()
+                    end)
+                    characterReadyEvent.Event:Wait()
+                    
+                    task.wait(0.5)
+                    isRespawning = false
+                    
+                    -- Restart loop dari spawnpoint
+                    startLoopFromCheckpoint(1)
+                else
+                    autoLoopEnabled = false
+                    isManualMode = false
+                end
             else
                 autoLoopEnabled = false
                 isManualMode = false
-                Rayfield:Notify({
-                    Title = "Auto Walk (Manual)",
-                    Content = "Auto walk selesai!",
-                    Duration = 2,
-                    Image = "check-check"
-                })
             end
             return
         end
@@ -1029,7 +931,8 @@ local function startManualAutoWalkSequence(startCheckpoint)
         if data and #data > 0 then
             task.wait(0.5)
 
-            if isManualMode and currentCheckpoint == startCheckpoint then
+            -- Hanya walk ke start jika pada checkpoint pertama di loop
+            if currentCheckpoint == checkpointIndex then
                 local okWalk = walkToStartIfNeeded(data)
                 if not okWalk then
                     return
@@ -1050,131 +953,7 @@ local function startManualAutoWalkSequence(startCheckpoint)
     end
 
     playNext()
-end
-
--- Function to rotate a single checkpoint (manual)
-local function playSingleCheckpointFile(fileName, checkpointIndex)
-    if loopingEnabled then
-        stopPlayback()
-        startManualAutoWalkSequence(checkpointIndex)
-        return
-    end
-
-    autoLoopEnabled = false
-    isManualMode = false
-    stopPlayback()
-
-    local ok, path = EnsureJsonFile(fileName)
-    if not ok then
-        Rayfield:Notify({
-            Title = "Error",
-            Content = "Failed to ensure JSON checkpoint",
-            Duration = 4,
-            Image = "ban"
-        })
-        return
-    end
-
-    local data = loadCheckpoint(fileName)
-    if not data or #data == 0 then
-        Rayfield:Notify({
-            Title = "Error",
-            Content = "File invalid / kosong",
-            Duration = 4,
-            Image = "ban"
-        })
-        return
-    end
-
-    local hrp = character:FindFirstChild("HumanoidRootPart")
-    if not hrp then
-        Rayfield:Notify({
-            Title = "Error",
-            Content = "HumanoidRootPart tidak ditemukan!",
-            Duration = 4,
-            Image = "ban"
-        })
-        return
-    end
-
-    local startPos = tableToVec(data[1].position)
-    local distance = (hrp.Position - startPos).Magnitude
-
-    if distance > 150 then
-        Rayfield:Notify({
-            Title = "Auto Walk (Manual)",
-            Content = string.format("Terlalu jauh (%.0f studs)! Harus dalam jarak 100.", distance),
-            Duration = 4,
-            Image = "alert-triangle"
-        })
-        return
-    end
-
-    Rayfield:Notify({
-        Title = "Auto Walk (Manual)",
-        Content = string.format("Menuju ke titik awal... (%.0f studs)", distance),
-        Duration = 3,
-        Image = "walk"
-    })
-
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    local moving = true
-    humanoid:MoveTo(startPos)
-
-    local reachedConnection
-    reachedConnection = humanoid.MoveToFinished:Connect(function(reached)
-        if reached then
-            moving = false
-            reachedConnection:Disconnect()
-
-            Rayfield:Notify({
-                Title = "Auto Walk (Manual)",
-                Content = "Sudah sampai di titik awal, mulai playback...",
-                Duration = 2,
-                Image = "play"
-            })
-
-            task.wait(0.5)
-            startPlayback(data, function()
-                Rayfield:Notify({
-                    Title = "Auto Walk (Manual)",
-                    Content = "Auto walk selesai!",
-                    Duration = 2,
-                    Image = "check-check"
-                })
-            end)
-        else
-            Rayfield:Notify({
-                Title = "Auto Walk (Manual)",
-                Content = "Gagal mencapai titik awal!",
-                Duration = 3,
-                Image = "ban"
-            })
-            moving = false
-            reachedConnection:Disconnect()
-        end
-    end)
-
-    task.spawn(function()
-        local timeout = 20
-        local elapsed = 0
-        while moving and elapsed < timeout do
-            task.wait(1)
-            elapsed += 1
-        end
-        if moving then
-            Rayfield:Notify({
-                Title = "Auto Walk (Manual)",
-                Content = "Tidak bisa mencapai titik awal (timeout)!",
-                Duration = 3,
-                Image = "ban"
-            })
-            humanoid:Move(Vector3.new(0,0,0))
-            moving = false
-            if reachedConnection then reachedConnection:Disconnect() end
-        end
-    end)
-end
+end	
 
 -- Event listener when the player respawns
 player.CharacterAdded:Connect(function(newChar)
@@ -1182,9 +961,13 @@ player.CharacterAdded:Connect(function(newChar)
     humanoid = character:WaitForChild("Humanoid")
     humanoidRootPart = character:WaitForChild("HumanoidRootPart")
     
-    if isPlaying then stopPlayback() end
+    if isPlaying and not isRespawning then
+        stopPlayback()
+    end
+    
+    -- Signal bahwa character sudah siap
+    characterReadyEvent:Fire()
 end)
-
 -------------------------------------------------------------
 
 -----| MENU 1 > AUTO WALK SETTINGS |-----
@@ -1531,7 +1314,7 @@ local Toggle = AutoWalkTab:CreateToggle({
 -- Slider Speed Auto
 local SpeedSlider = AutoWalkTab:CreateSlider({
     Name = "⚡ Set Speed",
-    Range = {0.5, 1.2},
+    Range = {0.5, 1.0},
     Increment = 0.10,
     Suffix = "x Speed",
     CurrentValue = 1.0,
@@ -1550,44 +1333,52 @@ local SpeedSlider = AutoWalkTab:CreateSlider({
 })
 -------------------------------------------------------------
 
------| MENU 1.5 > AUTO WALK LOOPING |-----
-local Section = AutoWalkTab:CreateSection("Auto Walk (Looping)")
-
-local LoopingToggle = AutoWalkTab:CreateToggle({
-   Name = "🔄 Enable Looping",
-   CurrentValue = false,
-   Callback = function(Value)
-       loopingEnabled = Value
-       if Value then
-           Rayfield:Notify({
-               Title = "Looping",
-               Content = "Fitur looping diaktifkan!",
-               Duration = 3,
-               Image = "repeat"
-           })
-       else
-           Rayfield:Notify({
-               Title = "Looping",
-               Content = "Fitur looping dinonaktifkan!",
-               Duration = 3,
-               Image = "x"
-           })
-       end
-   end,
-})
-
--------------------------------------------------------------
-
 -----| MENU 3 > AUTO WALK (MANUAL) |-----
 local Section = AutoWalkTab:CreateSection("Auto Walk (Manual)")
 
 -- Toggle Auto Walk (Spawnpoint)
-local SCPToggle = AutoWalkTab:CreateToggle({
-    Name = "Auto Walk (Spawnpoint)",
+local CPS1Toggle = AutoWalkTab:CreateToggle({
+    Name = "Auto Walk (Spawnpoint | Jalur Merah)",
     CurrentValue = false,
     Callback = function(Value)
         if Value then
-            playSingleCheckpointFile("spawnpoint.json", 1)
+            stopPlayback()
+            autoLoopEnabled = true
+            startLoopFromCheckpoint(1)
+        else
+            autoLoopEnabled = false
+            isManualMode = false
+            stopPlayback()
+        end
+    end,
+})
+
+-- Toggle Auto Walk (Spawnpoint)
+local CPS2Toggle = AutoWalkTab:CreateToggle({
+    Name = "Auto Walk (Spawnpoint | Jalur Dontol)",
+    CurrentValue = false,
+    Callback = function(Value)
+        if Value then
+            stopPlayback()
+            autoLoopEnabled = true
+            startLoopFromCheckpoint(2)
+        else
+            autoLoopEnabled = false
+            isManualMode = false
+            stopPlayback()
+        end
+    end,
+})
+
+-- Toggle Auto Walk (Spawnpoint)
+local CPS3Toggle = AutoWalkTab:CreateToggle({
+    Name = "Auto Walk (Spawnpoint | Jalur Pro)",
+    CurrentValue = false,
+    Callback = function(Value)
+        if Value then
+            stopPlayback()
+            autoLoopEnabled = true
+            startLoopFromCheckpoint(3)
         else
             autoLoopEnabled = false
             isManualMode = false
@@ -1602,7 +1393,9 @@ local CP1Toggle = AutoWalkTab:CreateToggle({
     CurrentValue = false,
     Callback = function(Value)
         if Value then
-            playSingleCheckpointFile("checkpoint_1.json", 2)
+            stopPlayback()
+            autoLoopEnabled = true
+            startLoopFromCheckpoint(4)
         else
             autoLoopEnabled = false
             isManualMode = false
@@ -1611,13 +1404,14 @@ local CP1Toggle = AutoWalkTab:CreateToggle({
     end,
 })
 
--- Toggle Auto Walk (Checkpoint 2)
 local CP2Toggle = AutoWalkTab:CreateToggle({
     Name = "Auto Walk (Checkpoint 2)",
     CurrentValue = false,
     Callback = function(Value)
         if Value then
-            playSingleCheckpointFile("checkpoint_2.json", 3)
+            stopPlayback()
+            autoLoopEnabled = true
+            startLoopFromCheckpoint(5)
         else
             autoLoopEnabled = false
             isManualMode = false
@@ -1626,13 +1420,14 @@ local CP2Toggle = AutoWalkTab:CreateToggle({
     end,
 })
 
--- Toggle Auto Walk (Checkpoint 3)
 local CP3Toggle = AutoWalkTab:CreateToggle({
     Name = "Auto Walk (Checkpoint 3)",
     CurrentValue = false,
     Callback = function(Value)
         if Value then
-            playSingleCheckpointFile("checkpoint_3.json", 4)
+            stopPlayback()
+            autoLoopEnabled = true
+            startLoopFromCheckpoint(6)
         else
             autoLoopEnabled = false
             isManualMode = false
@@ -1641,13 +1436,14 @@ local CP3Toggle = AutoWalkTab:CreateToggle({
     end,
 })
 
--- Toggle Auto Walk (Checkpoint 4)
 local CP4Toggle = AutoWalkTab:CreateToggle({
     Name = "Auto Walk (Checkpoint 4)",
     CurrentValue = false,
     Callback = function(Value)
         if Value then
-            playSingleCheckpointFile("checkpoint_4.json", 5)
+            stopPlayback()
+            autoLoopEnabled = true
+            startLoopFromCheckpoint(7)
         else
             autoLoopEnabled = false
             isManualMode = false
@@ -1656,28 +1452,14 @@ local CP4Toggle = AutoWalkTab:CreateToggle({
     end,
 })
 
--- Toggle Auto Walk (Checkpoint 5)
 local CP5Toggle = AutoWalkTab:CreateToggle({
     Name = "Auto Walk (Checkpoint 5)",
     CurrentValue = false,
     Callback = function(Value)
         if Value then
-            playSingleCheckpointFile("checkpoint_5.json", 6)
-        else
-            autoLoopEnabled = false
-            isManualMode = false
             stopPlayback()
-        end
-    end,
-})
-
--- Toggle Auto Walk (Checkpoint 6)
-local CP6Toggle = AutoWalkTab:CreateToggle({
-    Name = "Auto Walk (Checkpoint 6)",
-    CurrentValue = false,
-    Callback = function(Value)
-        if Value then
-            playSingleCheckpointFile("checkpoint_6.json", 7)
+            autoLoopEnabled = true
+            startLoopFromCheckpoint(8)
         else
             autoLoopEnabled = false
             isManualMode = false
@@ -2138,15 +1920,10 @@ UpdateTab:CreateToggle({
 -- CREDITS
 -------------------------------------------------------------
 local Section = CreditsTab:CreateSection("Credits List")
-
 -- Credits: 1
 CreditsTab:CreateLabel("UI: Rayfield Interface")
 -- Credits: 2
 CreditsTab:CreateLabel("Dev: RullzsyHUB")
 -------------------------------------------------------------
 -- CREDITS - END
-
-
 -------------------------------------------------------------
-
-
