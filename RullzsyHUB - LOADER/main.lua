@@ -35,12 +35,13 @@ ScriptTab:CreateButton({
 
 -- Script 3
 ScriptTab:CreateButton({
-    Name = "🟢 KOTA BUKAN GUNUNG",
+    Name = "🟢 MOUNT ATIN",
     Callback = function()
-        Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT YAHAYUK...", Duration=4})
-        loadstring(game:HttpGet("xxx"))()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT ATIN...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20ATIN/main.lua"))()
     end
 })
+
 
 
 
