@@ -11,7 +11,6 @@ local Window = Rayfield:CreateWindow({
    Icon = "braces",
    LoadingTitle = "Created By RullzsyHUB",
    LoadingSubtitle = "Follow Tiktok: @rullzsy99",
-   Theme = "Amethyst",
 })
 
 -------------------------------------------------------------
@@ -887,7 +886,10 @@ local function startLoopFromCheckpoint(checkpointIndex)
         if not autoLoopEnabled then return end
 
         currentCheckpoint = currentCheckpoint + 1
+        
+        -- PERBAIKAN: Cek apakah sudah melewati checkpoint terakhir
         if currentCheckpoint > #jsonFiles then
+            -- Hanya lanjut jika looping enabled
             if loopingEnabled then
                 -- Respawn dan loop lagi
                 if autoRespawnEnabled then
@@ -915,10 +917,24 @@ local function startLoopFromCheckpoint(checkpointIndex)
                     -- Restart loop dari spawnpoint
                     startLoopFromCheckpoint(1)
                 else
+                    -- Looping enabled tapi auto respawn tidak, stop saja
+                    Rayfield:Notify({
+                        Title = "Auto Walk",
+                        Content = "Semua checkpoint selesai!",
+                        Duration = 3,
+                        Image = "check"
+                    })
                     autoLoopEnabled = false
                     isManualMode = false
                 end
             else
+                -- PERBAIKAN: Jika looping TIDAK enabled, stop di sini
+                Rayfield:Notify({
+                    Title = "Auto Walk",
+                    Content = "Checkpoint selesai! Looping tidak aktif.",
+                    Duration = 3,
+                    Image = "check"
+                })
                 autoLoopEnabled = false
                 isManualMode = false
             end
@@ -952,7 +968,24 @@ local function startLoopFromCheckpoint(checkpointIndex)
                 end
             end
 
-            startPlayback(data, playNext)
+            -- PERBAIKAN: Hanya panggil playNext jika looping enabled ATAU masih ada checkpoint berikutnya yang harus dimainkan dalam satu sesi
+            -- Jika looping tidak aktif, hanya mainkan 1 file JSON saja
+            if loopingEnabled then
+                -- Looping aktif: lanjut ke checkpoint berikutnya
+                startPlayback(data, playNext)
+            else
+                -- Looping tidak aktif: mainkan file ini saja, lalu berhenti
+                startPlayback(data, function()
+                    Rayfield:Notify({
+                        Title = "Auto Walk",
+                        Content = "File " .. checkpointFile .. " selesai!",
+                        Duration = 3,
+                        Image = "check"
+                    })
+                    autoLoopEnabled = false
+                    isManualMode = false
+                end)
+            end
         else
             Rayfield:Notify({
                 Title = "Error",
@@ -966,7 +999,7 @@ local function startLoopFromCheckpoint(checkpointIndex)
     end
 
     playNext()
-end	
+end
 
 -- Event listener when the player respawns
 player.CharacterAdded:Connect(function(newChar)
@@ -1972,7 +2005,3 @@ CreditsTab:CreateLabel("Dev: RullzsyHUB")
 -------------------------------------------------------------
 -- CREDITS - END
 -------------------------------------------------------------
-
-
-
-
