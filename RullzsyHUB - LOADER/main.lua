@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
 local ScriptTab = Window:CreateTab("List Scripts", 4483362458)
 
 -- Section
-ScriptTab:CreateSection("🟢 TOTAL MAP: 5")
+ScriptTab:CreateSection("🟢 TOTAL MAP: 6")
 
 -- Script 1
 ScriptTab:CreateButton({
@@ -68,3 +68,4 @@ ScriptTab:CreateButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20HMMM/main.lua"))()
     end
 })
+
