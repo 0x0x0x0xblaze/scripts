@@ -396,7 +396,7 @@ if not isfolder(jsonFolder) then
 end
 
 -- Server URL and JSON checkpoint file list
-local baseURL = "https://raw.githubusercontent.com/0x0x0x0xblaze/json/refs/heads/main/json_mount_aneh_pro/spawnpoint.json"
+local baseURL = "https://raw.githubusercontent.com/0x0x0x0xblaze/json/refs/heads/main/json_mount_aneh_pro/"
 local jsonFiles = {
     "spawnpoint.json",
     "checkpoint_1.json",
@@ -2156,4 +2156,8 @@ CreditsTab:CreateLabel("UI: Rayfield Interface")
 CreditsTab:CreateLabel("Dev: RullzsyHUB")
 -------------------------------------------------------------
 -- CREDITS - END
+
 -------------------------------------------------------------
+
+
+
