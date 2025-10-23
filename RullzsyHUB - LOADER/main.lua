@@ -30,10 +30,10 @@ ScriptTab:CreateButton({
 
 -- Script 2
 ScriptTab:CreateButton({
-    Name = "🟢 MOUNT AGE",
+    Name = "🟢 MOUNT ANEH (PRO)",
     Callback = function()
         Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT YAHAYUK...", Duration=4})
-        loadstring(game:HttpGet("xxx"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20ANEH%20PRO/main.lua"))()
     end
 })
 
@@ -45,3 +45,4 @@ ScriptTab:CreateButton({
         loadstring(game:HttpGet("xxx"))()
     end
 })
+
