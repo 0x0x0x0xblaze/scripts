@@ -223,7 +223,7 @@ end
 -- SHOW AUTH UI IF NO VALID TOKEN
 -------------------------------------------------------------
 -- Load Rayfield UI
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/RullzsyHUB/roblox-scripts/refs/heads/main/UI%20Liblary/Rayfield.lua'))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "RullzsyHUB | Key System",
@@ -426,4 +426,5 @@ AuthTab:CreateButton({
 -------------------------------------------------------------
 -- AUTH UI - END
 -------------------------------------------------------------
+
 
