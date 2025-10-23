@@ -42,6 +42,11 @@ ScriptTab:CreateButton({
     end
 })
 
-
-
-
+-- Script 4
+ScriptTab:CreateButton({
+    Name = "🟢 KOTA BUKAN GUNUNG",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading KOTA BUKAN GUNUNG...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20KOTA%20BUKAN%20GUNUNG/main.lua"))()
+    end
+})
