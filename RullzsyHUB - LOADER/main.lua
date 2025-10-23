@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
 local ScriptTab = Window:CreateTab("List Scripts", 4483362458)
 
 -- Section
-ScriptTab:CreateSection("🟢 TOTAL MAP: 6")
+ScriptTab:CreateSection("🟢 TOTAL MAP: 7")
 
 -- Script 1
 ScriptTab:CreateButton({
@@ -66,6 +66,15 @@ ScriptTab:CreateButton({
     Callback = function()
         Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT HMMM...", Duration=4})
         loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20HMMM/main.lua"))()
+    end
+})
+
+-- Script 7
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT AGE",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT AGE...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20AGE/main.lua"))()
     end
 })
 
