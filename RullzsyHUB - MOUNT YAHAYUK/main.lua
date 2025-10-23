@@ -11,7 +11,6 @@ local Window = Rayfield:CreateWindow({
    Icon = "braces",
    LoadingTitle = "Created By RullzsyHUB",
    LoadingSubtitle = "Follow Tiktok: @rullzsy99",
-   Theme = "Amethyst",
 })
 
 -------------------------------------------------------------
@@ -2081,3 +2080,4 @@ CreditsTab:CreateLabel("Dev: RullzsyHUB")
 -- CREDITS - END
 
 -------------------------------------------------------------
+
