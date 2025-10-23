@@ -902,6 +902,7 @@ local function startManualAutoWalkSequence(startCheckpoint)
     currentCheckpoint = startCheckpoint - 1
     isManualMode = true
     autoLoopEnabled = true
+    manualStartCheckpoint = startCheckpoint -- Store starting checkpoint
 
     local function walkToStartIfNeeded(data)
         if not character or not character:FindFirstChild("HumanoidRootPart") then
@@ -1003,26 +1004,15 @@ local function startManualAutoWalkSequence(startCheckpoint)
 
         currentCheckpoint = currentCheckpoint + 1
         if currentCheckpoint > #jsonFiles then
-            if loopingEnabled then
-                Rayfield:Notify({
-                    Title = "Auto Walk (Manual)",
-                    Content = "Semua checkpoint selesai! Looping dari checkpoint 1...",
-                    Duration = 3,
-                    Image = "repeat"
-                })
-                task.wait(1)
-                currentCheckpoint = 0
-                playNext()
-            else
-                autoLoopEnabled = false
-                isManualMode = false
-                Rayfield:Notify({
-                    Title = "Auto Walk (Manual)",
-                    Content = "Auto walk selesai!",
-                    Duration = 2,
-                    Image = "check-check"
-                })
-            end
+            -- Manual mode: STOP at the end, don't loop back
+            autoLoopEnabled = false
+            isManualMode = false
+            Rayfield:Notify({
+                Title = "Auto Walk (Manual)",
+                Content = "Semua checkpoint selesai! silahkan masukan command di chat: !rejoin",
+                Duration = 4,
+                Image = "check-check"
+            })
             return
         end
 
@@ -1045,7 +1035,7 @@ local function startManualAutoWalkSequence(startCheckpoint)
         if data and #data > 0 then
             task.wait(0.5)
 
-            if isManualMode and currentCheckpoint == startCheckpoint then
+            if isManualMode and currentCheckpoint == manualStartCheckpoint then
                 local okWalk = walkToStartIfNeeded(data)
                 if not okWalk then
                     return
