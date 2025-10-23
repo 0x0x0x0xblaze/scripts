@@ -7,10 +7,6 @@ local Window = Rayfield:CreateWindow({
     Name = "RullzsyHUB | Script Loader",
     LoadingTitle = "Created By RullzsyHUB",
     LoadingSubtitle = "Follow Tiktok: @rullzsy99",
-	Theme = "Amethyst",
-    ConfigurationSaving = { Enabled = false },
-    Discord = { Enabled = false },
-    KeySystem = false
 })
 
 -- Tab Menu
@@ -45,5 +41,6 @@ ScriptTab:CreateButton({
         loadstring(game:HttpGet("xxx"))()
     end
 })
+
 
 
