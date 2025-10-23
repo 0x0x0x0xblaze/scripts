@@ -1,7 +1,7 @@
 -------------------------------------------------------------
 -- LOAD LIBRARY UI
 -------------------------------------------------------------
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/RullzsyHUB/roblox-scripts/refs/heads/main/UI%20Liblary/Rayfield.lua'))()
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -------------------------------------------------------------
 -- WINDOW PROCESS
@@ -1972,5 +1972,6 @@ CreditsTab:CreateLabel("Dev: RullzsyHUB")
 -------------------------------------------------------------
 -- CREDITS - END
 -------------------------------------------------------------
+
 
 
