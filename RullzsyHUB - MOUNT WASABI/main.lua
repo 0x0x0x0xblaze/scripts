@@ -397,6 +397,7 @@ end
 -- Server URL and JSON checkpoint file list
 local baseURL = "https://raw.githubusercontent.com/0x0x0x0xblaze/json/refs/heads/main/json_mount_wasabi/"
 local jsonFiles = {
+    "spawnpoint.json",
     "checkpoint_1.json",
     "checkpoint_2.json",
     "checkpoint_3.json",

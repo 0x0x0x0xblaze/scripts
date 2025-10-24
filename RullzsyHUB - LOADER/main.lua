@@ -161,10 +161,10 @@ ScriptTab:CreateButton({
 
 -- Script 17
 ScriptTab:CreateButton({
-    Name = "🟠 MOUNT WASABI (BESOK AJA MAU TURU)",
+    Name = "🟢 MOUNT WASABI",
     Callback = function()
         Rayfield:Notify({Title="Executing", Image="file", Content="Loading WASABI...", Duration=4})
-        -- loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20WASABI/main.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20WASABI/main.lua"))()
     end
 })
 
