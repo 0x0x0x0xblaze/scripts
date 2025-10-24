@@ -1549,7 +1549,7 @@ AutoWalkTab:CreateToggle({
 
 AutoWalkTab:CreateSlider({
     Name = "Walk Speed",
-    Range = {16, 30},
+    Range = {16, 25},
     Increment = 1,
     Suffix = "x Speed",
     CurrentValue = 16,
