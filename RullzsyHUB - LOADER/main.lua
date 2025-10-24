@@ -92,7 +92,7 @@ ScriptTab:CreateButton({
     Name = "🟢 MOUNT KAWAH EXPEDITION (PRO)",
     Callback = function()
         Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT KAWAH EXPEDITION PRO...", Duration=4})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20FUNNY/main.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20KAWAH%20TERJUN%20PRO/main.lua"))()
     end
 })
 
@@ -155,7 +155,7 @@ ScriptTab:CreateButton({
     Name = "🟢 MOUNT SAKAHAYANG",
     Callback = function()
         Rayfield:Notify({Title="Executing", Image="file", Content="Loading SAKAHAYANG...", Duration=4})
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20SAKAHAYANG/main.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20SAKAHAYANG%20MEDIUM/main.lua"))()
     end
 })
 
