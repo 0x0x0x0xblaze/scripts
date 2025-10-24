@@ -16,7 +16,6 @@ local Window = Rayfield:CreateWindow({
 -------------------------------------------------------------
 -- TAB MENU
 -------------------------------------------------------------
-local AccountTab = Window:CreateTab("Account", "user")
 local BypassTab = Window:CreateTab("Bypass", "shield")
 local AutoWalkTab = Window:CreateTab("Auto Walk", "bot")
 local VisualTab = Window:CreateTab("Visual", "layers")

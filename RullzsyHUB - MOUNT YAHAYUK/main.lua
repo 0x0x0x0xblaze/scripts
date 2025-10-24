@@ -41,6 +41,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local setclipboard = setclipboard or toclipboard
+local LocalPlayer = Players.LocalPlayer
 
 
 
@@ -1499,6 +1500,65 @@ local SpeedSlider = AutoWalkTab:CreateSlider({
             speedText = "Cepat (" .. string.format("%.1f", Value) .. "x)"
         else
             speedText = "Normal (" .. Value .. "x)"
+        end
+    end,
+})
+
+local WalkSpeedEnabled = false
+local WalkSpeedValue = 16
+
+-- Function to apply walk speed
+local function ApplyWalkSpeed(Humanoid)
+    if WalkSpeedEnabled then
+        Humanoid.WalkSpeed = WalkSpeedValue
+    else
+        Humanoid.WalkSpeed = 16
+    end
+end
+
+-- Function to set up on respawn
+local function SetupCharacter(Char)
+    local Humanoid = Char:WaitForChild("Humanoid")
+    ApplyWalkSpeed(Humanoid)
+end
+
+-- Connect when player respawns
+LocalPlayer.CharacterAdded:Connect(function(Char)
+    task.wait(1)
+    SetupCharacter(Char)
+end)
+
+-- Initial setup for current character
+if LocalPlayer.Character then
+    SetupCharacter(LocalPlayer.Character)
+end
+
+-- // UI Toggles
+AutoWalkTab:CreateToggle({
+    Name = "Enable Walk Speed",
+    CurrentValue = false,
+    Flag = "WalkSpeedToggle",
+    Callback = function(Value)
+        WalkSpeedEnabled = Value
+        local Char = LocalPlayer.Character
+        if Char and Char:FindFirstChild("Humanoid") then
+            ApplyWalkSpeed(Char.Humanoid)
+        end
+    end,
+})
+
+AutoWalkTab:CreateSlider({
+    Name = "Walk Speed",
+    Range = {16, 30},
+    Increment = 1,
+    Suffix = "x Speed",
+    CurrentValue = 16,
+    Flag = "WalkSpeedSlider",
+    Callback = function(Value)
+        WalkSpeedValue = Value
+        local Char = LocalPlayer.Character
+        if Char and Char:FindFirstChild("Humanoid") and WalkSpeedEnabled then
+            Char.Humanoid.WalkSpeed = WalkSpeedValue
         end
     end,
 })
