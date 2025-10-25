@@ -387,7 +387,7 @@ BypassTab:CreateToggle({
 -----| AUTO WALK VARIABLES |-----
 -- Setup folder save file json
 local mainFolder = "RullzsyHUB"
-local jsonFolder = mainFolder .. "/js_mount_funny_patch_new_001"
+local jsonFolder = mainFolder .. "/js_mount_funny_patch_new_002"
 if not isfolder(mainFolder) then
     makefolder(mainFolder)
 end
