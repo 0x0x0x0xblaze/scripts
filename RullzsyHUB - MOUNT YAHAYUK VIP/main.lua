@@ -443,16 +443,11 @@ local function startActivityMonitor()
         
         local currentTime = tick()
         
-        -- Check if auto walk is stuck (no activity for too long)
         if isPlaying then
             lastActivityTime = currentTime
         elseif (currentTime - lastActivityTime) > ACTIVITY_TIMEOUT then
             warn("⚠️ Auto walk stuck detected! Restarting...")
-            
-            -- Reset state
             stopPlayback()
-            
-            -- Restart from current or next checkpoint
             if isManualMode then
                 local restartCheckpoint = math.max(1, currentCheckpoint)
                 
