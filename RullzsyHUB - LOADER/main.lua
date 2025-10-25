@@ -176,3 +176,12 @@ ScriptTab:CreateButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20BILEK/main.lua"))()
     end
 })
+
+-- Script 19
+ScriptTab:CreateButton({
+    Name = "🟢 MOUNT CIELO",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading CIELO...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20CIELO/main.lua"))()
+    end
+})
