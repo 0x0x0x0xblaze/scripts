@@ -19,6 +19,7 @@ local Window = Rayfield:CreateWindow({
 local AccountTab = Window:CreateTab("Account", "user")
 local BypassTab = Window:CreateTab("Bypass", "shield")
 local AutoWalkTab = Window:CreateTab("Auto Walk", "bot")
+local ServerTab = Window:CreateTab("Server Finding", "globe")
 local VisualTab = Window:CreateTab("Visual", "layers")
 local RunAnimationTab = Window:CreateTab("Run Animation", "person-standing")
 local UpdateTab = Window:CreateTab("Update Script", "file")
@@ -1545,7 +1546,7 @@ local Toggle = AutoWalkTab:CreateToggle({
 -- Slider Speed Auto
 local SpeedSlider = AutoWalkTab:CreateSlider({
     Name = "⚡ Set Speed",
-    Range = {0.5, 1.2},
+    Range = {0.5, 1.0},
     Increment = 0.10,
     Suffix = "x Speed",
     CurrentValue = 1.0,
@@ -2005,36 +2006,248 @@ local CP27Toggle = AutoWalkTab:CreateToggle({
 
 
 
+-------------------------------------------------------------
+-- SERVER FINDING
+-------------------------------------------------------------
+local ServerSection = ServerTab:CreateSection("Server Menu")
+
+-- Varibale Server
+local HttpService = game:GetService("HttpService")
+local PlaceId = game.PlaceId
+local Servers = {}
+
+local function FetchServers()
+    local Cursor = ""
+    Servers = {}
+
+    repeat
+        local URL = string.format("https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=Asc&limit=100%s", PlaceId, Cursor ~= "" and "&cursor="..Cursor or "")
+        local Response = game:HttpGet(URL)
+        local Data = HttpService:JSONDecode(Response)
+
+        for _, server in pairs(Data.data) do
+            table.insert(Servers, server)
+        end
+
+        Cursor = Data.nextPageCursor
+        task.wait(0.5)
+    until not Cursor
+
+    return Servers
+end
+
+-- Function Join Server
+local function CreateServerButtons()
+    ServerTab:CreateParagraph({Title = "🔍 Mencari Server...", Content = "Tunggu sebentar sedang mencari data server..."})
+    local allServers = FetchServers()
+    ServerTab:CreateSection(" ")
+
+    for _, server in pairs(allServers) do
+        local playerCount = string.format("%d/%d", server.playing, server.maxPlayers)
+        local isSafe = server.playing <= (server.maxPlayers / 2)
+
+        local emoji = isSafe and "🟢" or "🟥"
+        local safety = isSafe and "Safe" or "No Safe"
+
+        local name = string.format("%s Server [%s] - %s", emoji, playerCount, safety)
+
+        ServerTab:CreateButton({
+            Name = name,
+            Callback = function()
+                game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceId, server.id)
+            end,
+        })
+    end
+
+    ServerTab:CreateParagraph({Title = "✅ Selesai!", Content = "Pilih salah satu server sepi di atas untuk join."})
+end
+
+-- Toggle Start Find Server
+ServerTab:CreateButton({
+    Name = "🔄 START FIND SERVER",
+    Callback = function()
+        CreateServerButtons()
+    end,
+})
+
+local Divider = ServerTab:CreateDivider()
+-------------------------------------------------------------
+-- SERVER FINDING - END
+-------------------------------------------------------------
+
+
+
 -- =============================================================
 -- VISUAL
 -- =============================================================
-
--- ===== | TIME MENU | ===== --
-local VisualSection = VisualTab:CreateSection("Time Menu")
-
--- Variables
 local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
--- Slider Time Changer
-local TimeSlider = VisualTab:CreateSlider({
-   Name = "🕒 Time Changer",
-   Range = {0, 24},
-   Increment = 1,
-   Suffix = "Hours",
-   CurrentValue = Lighting.ClockTime,
-   Callback = function(Value)
-       Lighting.ClockTime = Value
+-- Full Bright
+local LightSection = VisualTab:CreateSection("Lightning Menu")
 
-       if Value >= 6 and Value < 18 then
-           Lighting.Brightness = 2
-           Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
-       else
-           Lighting.Brightness = 0.5
-           Lighting.OutdoorAmbient = Color3.fromRGB(50, 50, 100)
-       end
-   end,
+local FullBrightToggle = VisualTab:CreateToggle({
+    Name = "💡 Full Bright",
+    CurrentValue = false,
+    Callback = function(Value)
+        if Value then
+            Lighting.Brightness = 2
+            Lighting.ClockTime = 12
+            Lighting.FogEnd = 100000
+            Lighting.GlobalShadows = false
+            Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+        else
+            Lighting.Brightness = 1
+            Lighting.ClockTime = 14
+            Lighting.FogEnd = 10000
+            Lighting.GlobalShadows = true
+            Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+        end
+    end,
 })
--- ===== | TIME MENU - END | ===== --
+
+-- Hide Nametag
+local PlayerSection = VisualTab:CreateSection("Player Menu")
+
+local HideNametagToggle = VisualTab:CreateToggle({
+    Name = "🏷️ Hide Player Nametags",
+    CurrentValue = false,
+    Callback = function(Value)
+        local function hideNametagsForCharacter(character)
+            if not character then return end
+            local head = character:FindFirstChild("Head")
+            if not head then return end
+            for _, obj in pairs(head:GetChildren()) do
+                if obj:IsA("BillboardGui") then
+                    obj.Enabled = false
+                end
+            end
+        end
+
+        local function showNametagsForCharacter(character)
+            if not character then return end
+            local head = character:FindFirstChild("Head")
+            if not head then return end
+            for _, obj in pairs(head:GetChildren()) do
+                if obj:IsA("BillboardGui") then
+                    obj.Enabled = true
+                end
+            end
+        end
+
+        local function setNametagsVisible(state)
+            for _, player in pairs(Players:GetPlayers()) do
+                if player.Character then
+                    if state then
+                        showNametagsForCharacter(player.Character)
+                    else
+                        hideNametagsForCharacter(player.Character)
+                    end
+                end
+            end
+        end
+
+        if Value then
+            -- Sembunyikan semua yang ada sekarang
+            setNametagsVisible(false)
+
+            -- Listener untuk pemain baru & respawn
+            nametagConnections = {}
+
+            local function connectPlayer(player)
+                local charAddedConn
+                charAddedConn = player.CharacterAdded:Connect(function(char)
+                    task.wait(1)
+                    hideNametagsForCharacter(char)
+                end)
+                table.insert(nametagConnections, charAddedConn)
+            end
+
+            for _, player in pairs(Players:GetPlayers()) do
+                connectPlayer(player)
+            end
+
+            table.insert(nametagConnections, Players.PlayerAdded:Connect(connectPlayer))
+
+        else
+            -- Tampilkan semua nametag
+            setNametagsVisible(true)
+
+            -- Bersihkan koneksi event
+            if nametagConnections then
+                for _, conn in pairs(nametagConnections) do
+                    if conn.Connected then conn:Disconnect() end
+                end
+            end
+            nametagConnections = nil
+        end
+    end,
+})
+
+-- Hide Player
+local HidePlayerToggle = VisualTab:CreateToggle({
+    Name = "🧍 Hide Other Players",
+    CurrentValue = false,
+    Callback = function(Value)
+        local function setPlayerVisible(player, visible)
+            if not player.Character then return end
+            for _, part in pairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("Decal") then
+                    part.LocalTransparencyModifier = visible and 0 or 1
+                end
+            end
+        end
+
+        local function setAllPlayersVisible(visible)
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    setPlayerVisible(player, visible)
+                end
+            end
+        end
+
+        if Value then
+            -- Sembunyikan semua player yang ada sekarang
+            setAllPlayersVisible(false)
+
+            hidePlayerConnections = {}
+
+            local function connectPlayer(player)
+                -- Saat karakter player baru muncul, langsung sembunyikan lagi
+                local charAddedConn
+                charAddedConn = player.CharacterAdded:Connect(function(char)
+                    task.wait(1)
+                    setPlayerVisible(player, false)
+                end)
+                table.insert(hidePlayerConnections, charAddedConn)
+            end
+
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    connectPlayer(player)
+                end
+            end
+
+            table.insert(hidePlayerConnections, Players.PlayerAdded:Connect(function(player)
+                connectPlayer(player)
+            end))
+
+        else
+            -- Tampilkan semua kembali
+            setAllPlayersVisible(true)
+
+            -- Bersihkan koneksi listener
+            if hidePlayerConnections then
+                for _, conn in pairs(hidePlayerConnections) do
+                    if conn.Connected then conn:Disconnect() end
+                end
+            end
+            hidePlayerConnections = nil
+        end
+    end,
+})
+
 -- =============================================================
 -- VISUAL - END
 -- =============================================================

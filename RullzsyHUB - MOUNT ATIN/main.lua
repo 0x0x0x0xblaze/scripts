@@ -2137,27 +2137,24 @@ local Divider = ServerTab:CreateDivider()
 -- =============================================================
 -- VISUAL
 -- =============================================================
-
--- Section
-local Section = VisualTab:CreateSection("Lightning Menu")
-
--- Variables
 local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
--- Toggle Full Bright
+-- Full Bright
+local LightSection = VisualTab:CreateSection("Lightning Menu")
+
 local FullBrightToggle = VisualTab:CreateToggle({
     Name = "💡 Full Bright",
     CurrentValue = false,
     Callback = function(Value)
         if Value then
-            -- Aktifkan Full Bright
             Lighting.Brightness = 2
             Lighting.ClockTime = 12
             Lighting.FogEnd = 100000
             Lighting.GlobalShadows = false
             Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
         else
-            -- Kembalikan ke default Roblox lighting
             Lighting.Brightness = 1
             Lighting.ClockTime = 14
             Lighting.FogEnd = 10000
@@ -2167,108 +2164,143 @@ local FullBrightToggle = VisualTab:CreateToggle({
     end,
 })
 
--- Section
-local Section = VisualTab:CreateSection("Player Menu")
-
 -- Hide Nametag
+local PlayerSection = VisualTab:CreateSection("Player Menu")
+
 local HideNametagToggle = VisualTab:CreateToggle({
     Name = "🏷️ Hide Player Nametags",
     CurrentValue = false,
     Callback = function(Value)
-        local Players = game:GetService("Players")
-        local LocalPlayer = Players.LocalPlayer
+        local function hideNametagsForCharacter(character)
+            if not character then return end
+            local head = character:FindFirstChild("Head")
+            if not head then return end
+            for _, obj in pairs(head:GetChildren()) do
+                if obj:IsA("BillboardGui") then
+                    obj.Enabled = false
+                end
+            end
+        end
 
-        -- Fungsi untuk menyembunyikan atau menampilkan nametag
+        local function showNametagsForCharacter(character)
+            if not character then return end
+            local head = character:FindFirstChild("Head")
+            if not head then return end
+            for _, obj in pairs(head:GetChildren()) do
+                if obj:IsA("BillboardGui") then
+                    obj.Enabled = true
+                end
+            end
+        end
+
         local function setNametagsVisible(state)
             for _, player in pairs(Players:GetPlayers()) do
-                if player.Character and player.Character:FindFirstChild("Head") then
-                    for _, obj in pairs(player.Character.Head:GetChildren()) do
-                        -- Cari BillboardGui yang biasanya berisi nametag
-                        if obj:IsA("BillboardGui") then
-                            obj.Enabled = state
-                        end
+                if player.Character then
+                    if state then
+                        showNametagsForCharacter(player.Character)
+                    else
+                        hideNametagsForCharacter(player.Character)
                     end
                 end
             end
         end
 
         if Value then
-            -- Saat toggle ON → sembunyikan semua nametag
+            -- Sembunyikan semua yang ada sekarang
             setNametagsVisible(false)
 
-            -- Juga pantau pemain baru / character respawn
-            nametagConnection1 = Players.PlayerAdded:Connect(function(player)
-                player.CharacterAdded:Connect(function(char)
+            -- Listener untuk pemain baru & respawn
+            nametagConnections = {}
+
+            local function connectPlayer(player)
+                local charAddedConn
+                charAddedConn = player.CharacterAdded:Connect(function(char)
                     task.wait(1)
-                    if char:FindFirstChild("Head") then
-                        for _, obj in pairs(char.Head:GetChildren()) do
-                            if obj:IsA("BillboardGui") then
-                                obj.Enabled = false
-                            end
-                        end
-                    end
+                    hideNametagsForCharacter(char)
                 end)
-            end)
+                table.insert(nametagConnections, charAddedConn)
+            end
 
-            nametagConnection2 = Players.PlayerRemoving:Connect(function()
-                -- otomatis hilangkan event saat player keluar
-            end)
+            for _, player in pairs(Players:GetPlayers()) do
+                connectPlayer(player)
+            end
 
-            charConnection = LocalPlayer.CharacterAdded:Connect(function(char)
-                task.wait(1)
-                setNametagsVisible(false)
-            end)
+            table.insert(nametagConnections, Players.PlayerAdded:Connect(connectPlayer))
 
         else
-            -- Saat toggle OFF → tampilkan kembali semua nametag
+            -- Tampilkan semua nametag
             setNametagsVisible(true)
 
-            -- Hentikan semua koneksi listener
-            if nametagConnection1 then nametagConnection1:Disconnect() end
-            if nametagConnection2 then nametagConnection2:Disconnect() end
-            if charConnection then charConnection:Disconnect() end
+            -- Bersihkan koneksi event
+            if nametagConnections then
+                for _, conn in pairs(nametagConnections) do
+                    if conn.Connected then conn:Disconnect() end
+                end
+            end
+            nametagConnections = nil
         end
     end,
 })
-
 
 -- Hide Player
 local HidePlayerToggle = VisualTab:CreateToggle({
     Name = "🧍 Hide Other Players",
     CurrentValue = false,
     Callback = function(Value)
-        local function setPlayersVisible(state)
+        local function setPlayerVisible(player, visible)
+            if not player.Character then return end
+            for _, part in pairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") or part:IsA("Decal") then
+                    part.LocalTransparencyModifier = visible and 0 or 1
+                end
+            end
+        end
+
+        local function setAllPlayersVisible(visible)
             for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and player.Character then
-                    for _, part in pairs(player.Character:GetDescendants()) do
-                        if part:IsA("BasePart") or part:IsA("Decal") then
-                            part.LocalTransparencyModifier = state and 1 or 0
-                        end
-                    end
+                if player ~= LocalPlayer then
+                    setPlayerVisible(player, visible)
                 end
             end
         end
 
         if Value then
-            -- Saat ON → semua player lain jadi tidak terlihat
-            setPlayersVisible(true)
+            -- Sembunyikan semua player yang ada sekarang
+            setAllPlayersVisible(false)
 
-            hidePlayerConnection1 = Players.PlayerAdded:Connect(function(player)
-                player.CharacterAdded:Connect(function(char)
+            hidePlayerConnections = {}
+
+            local function connectPlayer(player)
+                -- Saat karakter player baru muncul, langsung sembunyikan lagi
+                local charAddedConn
+                charAddedConn = player.CharacterAdded:Connect(function(char)
                     task.wait(1)
-                    for _, part in pairs(char:GetDescendants()) do
-                        if part:IsA("BasePart") or part:IsA("Decal") then
-                            part.LocalTransparencyModifier = 1
-                        end
-                    end
+                    setPlayerVisible(player, false)
                 end)
-            end)
+                table.insert(hidePlayerConnections, charAddedConn)
+            end
+
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    connectPlayer(player)
+                end
+            end
+
+            table.insert(hidePlayerConnections, Players.PlayerAdded:Connect(function(player)
+                connectPlayer(player)
+            end))
 
         else
-            -- Saat OFF → tampilkan kembali player lain
-            setPlayersVisible(false)
+            -- Tampilkan semua kembali
+            setAllPlayersVisible(true)
 
-            if hidePlayerConnection1 then hidePlayerConnection1:Disconnect() end
+            -- Bersihkan koneksi listener
+            if hidePlayerConnections then
+                for _, conn in pairs(hidePlayerConnections) do
+                    if conn.Connected then conn:Disconnect() end
+                end
+            end
+            hidePlayerConnections = nil
         end
     end,
 })
