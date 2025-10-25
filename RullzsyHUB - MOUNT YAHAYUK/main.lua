@@ -293,7 +293,7 @@ end)
 -----| AUTO WALK VARIABLES |-----
 -- Setup folder save file json
 local mainFolder = "RullzsyHUB"
-local jsonFolder = mainFolder .. "/json_mount_yahayuk_patch_new_002"
+local jsonFolder = mainFolder .. "/json_mount_yahayuk_patch_new_003"
 if not isfolder(mainFolder) then
     makefolder(mainFolder)
 end

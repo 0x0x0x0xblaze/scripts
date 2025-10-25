@@ -19,6 +19,7 @@ local Window = Rayfield:CreateWindow({
 local AccountTab = Window:CreateTab("Account", "user")
 local BypassTab = Window:CreateTab("Bypass", "shield")
 local AutoWalkTab = Window:CreateTab("Auto Walk", "bot")
+local ServerTab = Window:CreateTab("Server Finding", "globe")
 local VisualTab = Window:CreateTab("Visual", "layers")
 local RunAnimationTab = Window:CreateTab("Run Animation", "person-standing")
 local UpdateTab = Window:CreateTab("Update Script", "file")
