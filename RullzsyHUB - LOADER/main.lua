@@ -89,10 +89,10 @@ ScriptTab:CreateButton({
 
 -- Script 9
 ScriptTab:CreateButton({
-    Name = "🔴 MOUNT KAWAH EXPEDITION (PRO) MAINTENANCE",
+    Name = "🟢 MOUNT KAWAH EXPEDITION (PRO)",
     Callback = function()
         Rayfield:Notify({Title="Executing", Image="file", Content="Loading MOUNT KAWAH EXPEDITION PRO...", Duration=4})
-        -- loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20KAWAH%20TERJUN%20PRO/main.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20MOUNT%20KAWAH%20TERJUN%20PRO/main.lua"))()
     end
 })
 
