@@ -144,7 +144,7 @@ BypassTab:CreateToggle({
 -----| AUTO WALK VARIABLES |-----
 -- Setup folder save file json
 local mainFolder = "RullzsyHUB"
-local jsonFolder = mainFolder .. "/js_mount_yahayuk_vip_patch_new_002"
+local jsonFolder = mainFolder .. "/js_mount_yahayuk_vip_patch_new_003"
 if not isfolder(mainFolder) then
     makefolder(mainFolder)
 end
@@ -1466,7 +1466,7 @@ AutoWalkTab:CreateSlider({
     Flag = "WalkSpeedSlider",
     Callback = function(Value)
         WalkSpeedValue = Value
-        local Char = LocalPlayer.Character
+        local Char = LocalPlayer.f
         if Char and Char:FindFirstChild("Humanoid") and WalkSpeedEnabled then
             Char.Humanoid.WalkSpeed = WalkSpeedValue
         end
