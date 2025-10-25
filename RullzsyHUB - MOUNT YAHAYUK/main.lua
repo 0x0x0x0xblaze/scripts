@@ -18,6 +18,7 @@ local Window = Rayfield:CreateWindow({
 -------------------------------------------------------------
 local AccountTab = Window:CreateTab("Account", "user")
 local AutoWalkTab = Window:CreateTab("Auto Walk", "bot")
+local ServerTab = Window:CreateTab("Server Finding", "globe")
 local VisualTab = Window:CreateTab("Visual", "layers")
 local RunAnimationTab = Window:CreateTab("Run Animation", "person-standing")
 local UpdateTab = Window:CreateTab("Update Script", "file")
@@ -1090,9 +1091,6 @@ end)
 
 -------------------------------------------------------------
 
------| MENU 1 > AUTO WALK SETTINGS |-----
-local Section = AutoWalkTab:CreateSection("Auto Walk (Settings)")
-
 -------------------------------------------------------------
 -- PAUSE/ROTATE UI (MOBILE FRIENDLY & DRAGGABLE - EMOJI ONLY)
 -------------------------------------------------------------
@@ -1419,91 +1417,6 @@ end
 -------------------------------------------------------------
 -- TOGGLE
 -------------------------------------------------------------
-local Toggle = AutoWalkTab:CreateToggle({
-    Name = "Pause/Rotate Menu",
-    CurrentValue = false,
-    Callback = function(Value)
-        if Value then
-            pauseRotateUI.showUI()
-        else
-            pauseRotateUI.hideUI()
-        end
-    end,
-})
-
--- Variable Always Sprint
-local normalSpeed = 16
-local sprintSpeed = 24
-local autoShift = false
-
--- Function Always Sprint
-local function applyAutoShift(character)
-	local humanoid = character:WaitForChild("Humanoid", 5)
-	if humanoid then
-		if autoShift then
-			humanoid.WalkSpeed = sprintSpeed
-		else
-			humanoid.WalkSpeed = normalSpeed
-		end
-	end
-end
-
--- Handle Respawn
-player.CharacterAdded:Connect(function(char)
-	char:WaitForChild("Humanoid")
-	task.wait(0.5)
-	if autoShift then
-		applyAutoShift(char)
-	end
-end)
-
--- Toggle Always Sprint
-local Toggle = AutoWalkTab:CreateToggle({
-	Name = "Always Sprint",
-	CurrentValue = false,
-	Callback = function(Value)
-		autoShift = Value
-		if autoShift then
-			Rayfield:Notify({
-				Title = "Always Sprint",
-				Content = "Sprint Mode Aktif ✅",
-				Duration = 3
-			})
-		else
-			Rayfield:Notify({
-				Title = "Always Sprint",
-				Content = "Sprint Mode Nonaktif ❌",
-				Duration = 3
-			})
-		end
-		
-		if player.Character then
-			applyAutoShift(player.Character)
-		end
-	end,
-})
-
--- Slider Speed Auto
-local SpeedSlider = AutoWalkTab:CreateSlider({
-    Name = "⚡ Set Speed",
-    Range = {0.5, 1.2},
-    Increment = 0.10,
-    Suffix = "x Speed",
-    CurrentValue = 1.0,
-    Callback = function(Value)
-        playbackSpeed = Value
-
-        local speedText = "Normal"
-        if Value < 1.0 then
-            speedText = "Lambat (" .. string.format("%.1f", Value) .. "x)"
-        elseif Value > 1.0 then
-            speedText = "Cepat (" .. string.format("%.1f", Value) .. "x)"
-        else
-            speedText = "Normal (" .. Value .. "x)"
-        end
-    end,
-})
-
 local WalkSpeedEnabled = false
 local WalkSpeedValue = 16
 
@@ -1533,6 +1446,9 @@ if LocalPlayer.Character then
     SetupCharacter(LocalPlayer.Character)
 end
 
+-- Section
+local Section = AutoWalkTab:CreateSection("Walk Speed Menu")
+
 -- // UI Toggles
 AutoWalkTab:CreateToggle({
     Name = "Enable Walk Speed",
@@ -1549,16 +1465,52 @@ AutoWalkTab:CreateToggle({
 
 AutoWalkTab:CreateSlider({
     Name = "Walk Speed",
-    Range = {16, 25},
+    Range = {16, 26},
     Increment = 1,
     Suffix = "x Speed",
-    CurrentValue = 16,
+    CurrentValue = 20,
     Flag = "WalkSpeedSlider",
     Callback = function(Value)
         WalkSpeedValue = Value
         local Char = LocalPlayer.Character
         if Char and Char:FindFirstChild("Humanoid") and WalkSpeedEnabled then
             Char.Humanoid.WalkSpeed = WalkSpeedValue
+        end
+    end,
+})
+
+-- Section
+local Section = AutoWalkTab:CreateSection("Auto Walk (Settings)")
+
+local Toggle = AutoWalkTab:CreateToggle({
+    Name = "Pause/Rotate Menu",
+    CurrentValue = false,
+    Callback = function(Value)
+        if Value then
+            pauseRotateUI.showUI()
+        else
+            pauseRotateUI.hideUI()
+        end
+    end,
+})
+
+-- Slider Speed Auto
+local SpeedSlider = AutoWalkTab:CreateSlider({
+    Name = "⚡ Set Speed",
+    Range = {0.5, 1.2},
+    Increment = 0.10,
+    Suffix = "x Speed",
+    CurrentValue = 1.0,
+    Callback = function(Value)
+        playbackSpeed = Value
+
+        local speedText = "Normal"
+        if Value < 1.0 then
+            speedText = "Lambat (" .. string.format("%.1f", Value) .. "x)"
+        elseif Value > 1.0 then
+            speedText = "Cepat (" .. string.format("%.1f", Value) .. "x)"
+        else
+            speedText = "Normal (" .. Value .. "x)"
         end
     end,
 })
@@ -1684,36 +1636,216 @@ local CP5Toggle = AutoWalkTab:CreateToggle({
 
 
 
+-------------------------------------------------------------
+-- SERVER FINDING
+-------------------------------------------------------------
+local ServerSection = ServerTab:CreateSection("Server Menu")
+
+-- Varibale Server
+local HttpService = game:GetService("HttpService")
+local PlaceId = game.PlaceId
+local Servers = {}
+
+local function FetchServers()
+    local Cursor = ""
+    Servers = {}
+
+    repeat
+        local URL = string.format("https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=Asc&limit=100%s", PlaceId, Cursor ~= "" and "&cursor="..Cursor or "")
+        local Response = game:HttpGet(URL)
+        local Data = HttpService:JSONDecode(Response)
+
+        for _, server in pairs(Data.data) do
+            table.insert(Servers, server)
+        end
+
+        Cursor = Data.nextPageCursor
+        task.wait(0.5)
+    until not Cursor
+
+    return Servers
+end
+
+-- Function Join Server
+local function CreateServerButtons()
+    ServerTab:CreateParagraph({Title = "🔍 Mencari Server...", Content = "Tunggu sebentar sedang mencari data server..."})
+    local allServers = FetchServers()
+    ServerTab:CreateSection(" ")
+
+    for _, server in pairs(allServers) do
+        local playerCount = string.format("%d/%d", server.playing, server.maxPlayers)
+        local isSafe = server.playing <= (server.maxPlayers / 2)
+
+        local emoji = isSafe and "🟢" or "🟥"
+        local safety = isSafe and "Safe" or "No Safe"
+
+        local name = string.format("%s Server [%s] - %s", emoji, playerCount, safety)
+
+        ServerTab:CreateButton({
+            Name = name,
+            Callback = function()
+                game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceId, server.id)
+            end,
+        })
+    end
+
+    ServerTab:CreateParagraph({Title = "✅ Selesai!", Content = "Pilih salah satu server sepi di atas untuk join."})
+end
+
+-- Toggle Start Find Server
+ServerTab:CreateButton({
+    Name = "🔄 START FIND SERVER",
+    Callback = function()
+        CreateServerButtons()
+    end,
+})
+
+local Divider = ServerTab:CreateDivider()
+-------------------------------------------------------------
+-- SERVER FINDING - END
+-------------------------------------------------------------
+
+
+
 -- =============================================================
 -- VISUAL
 -- =============================================================
 
--- ===== | TIME MENU | ===== --
-local VisualSection = VisualTab:CreateSection("Time Menu")
+-- Section
+local Section = VisualTab:CreateSection("Lightning Menu")
 
 -- Variables
 local Lighting = game:GetService("Lighting")
 
--- Slider Time Changer
-local TimeSlider = VisualTab:CreateSlider({
-   Name = "🕒 Time Changer",
-   Range = {0, 24},
-   Increment = 1,
-   Suffix = "Hours",
-   CurrentValue = Lighting.ClockTime,
-   Callback = function(Value)
-       Lighting.ClockTime = Value
-
-       if Value >= 6 and Value < 18 then
-           Lighting.Brightness = 2
-           Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 200)
-       else
-           Lighting.Brightness = 0.5
-           Lighting.OutdoorAmbient = Color3.fromRGB(50, 50, 100)
-       end
-   end,
+-- Toggle Full Bright
+local FullBrightToggle = VisualTab:CreateToggle({
+    Name = "💡 Full Bright",
+    CurrentValue = false,
+    Callback = function(Value)
+        if Value then
+            -- Aktifkan Full Bright
+            Lighting.Brightness = 2
+            Lighting.ClockTime = 12
+            Lighting.FogEnd = 100000
+            Lighting.GlobalShadows = false
+            Lighting.OutdoorAmbient = Color3.fromRGB(255, 255, 255)
+        else
+            -- Kembalikan ke default Roblox lighting
+            Lighting.Brightness = 1
+            Lighting.ClockTime = 14
+            Lighting.FogEnd = 10000
+            Lighting.GlobalShadows = true
+            Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+        end
+    end,
 })
--- ===== | TIME MENU - END | ===== --
+
+-- Section
+local Section = VisualTab:CreateSection("Player Menu")
+
+-- Hide Nametag
+local HideNametagToggle = VisualTab:CreateToggle({
+    Name = "🏷️ Hide Player Nametags",
+    CurrentValue = false,
+    Callback = function(Value)
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+
+        -- Fungsi untuk menyembunyikan atau menampilkan nametag
+        local function setNametagsVisible(state)
+            for _, player in pairs(Players:GetPlayers()) do
+                if player.Character and player.Character:FindFirstChild("Head") then
+                    for _, obj in pairs(player.Character.Head:GetChildren()) do
+                        -- Cari BillboardGui yang biasanya berisi nametag
+                        if obj:IsA("BillboardGui") then
+                            obj.Enabled = state
+                        end
+                    end
+                end
+            end
+        end
+
+        if Value then
+            -- Saat toggle ON → sembunyikan semua nametag
+            setNametagsVisible(false)
+
+            -- Juga pantau pemain baru / character respawn
+            nametagConnection1 = Players.PlayerAdded:Connect(function(player)
+                player.CharacterAdded:Connect(function(char)
+                    task.wait(1)
+                    if char:FindFirstChild("Head") then
+                        for _, obj in pairs(char.Head:GetChildren()) do
+                            if obj:IsA("BillboardGui") then
+                                obj.Enabled = false
+                            end
+                        end
+                    end
+                end)
+            end)
+
+            nametagConnection2 = Players.PlayerRemoving:Connect(function()
+                -- otomatis hilangkan event saat player keluar
+            end)
+
+            charConnection = LocalPlayer.CharacterAdded:Connect(function(char)
+                task.wait(1)
+                setNametagsVisible(false)
+            end)
+
+        else
+            -- Saat toggle OFF → tampilkan kembali semua nametag
+            setNametagsVisible(true)
+
+            -- Hentikan semua koneksi listener
+            if nametagConnection1 then nametagConnection1:Disconnect() end
+            if nametagConnection2 then nametagConnection2:Disconnect() end
+            if charConnection then charConnection:Disconnect() end
+        end
+    end,
+})
+
+
+-- Hide Player
+local HidePlayerToggle = VisualTab:CreateToggle({
+    Name = "🧍 Hide Other Players",
+    CurrentValue = false,
+    Callback = function(Value)
+        local function setPlayersVisible(state)
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer and player.Character then
+                    for _, part in pairs(player.Character:GetDescendants()) do
+                        if part:IsA("BasePart") or part:IsA("Decal") then
+                            part.LocalTransparencyModifier = state and 1 or 0
+                        end
+                    end
+                end
+            end
+        end
+
+        if Value then
+            -- Saat ON → semua player lain jadi tidak terlihat
+            setPlayersVisible(true)
+
+            hidePlayerConnection1 = Players.PlayerAdded:Connect(function(player)
+                player.CharacterAdded:Connect(function(char)
+                    task.wait(1)
+                    for _, part in pairs(char:GetDescendants()) do
+                        if part:IsA("BasePart") or part:IsA("Decal") then
+                            part.LocalTransparencyModifier = 1
+                        end
+                    end
+                end)
+            end)
+
+        else
+            -- Saat OFF → tampilkan kembali player lain
+            setPlayersVisible(false)
+
+            if hidePlayerConnection1 then hidePlayerConnection1:Disconnect() end
+        end
+    end,
+})
+
 -- =============================================================
 -- VISUAL - END
 -- =============================================================
@@ -2138,7 +2270,4 @@ CreditsTab:CreateLabel("UI: Rayfield Interface")
 CreditsTab:CreateLabel("Dev: RullzsyHUB")
 -------------------------------------------------------------
 -- CREDITS - END
-
 -------------------------------------------------------------
-
-

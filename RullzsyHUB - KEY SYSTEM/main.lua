@@ -230,7 +230,6 @@ local Window = Rayfield:CreateWindow({
    Icon = "key",
    LoadingTitle = "Created By RullzsyHUB",
    LoadingSubtitle = "Follow TikTok: @rullzsy99",
-   Theme = "Amethyst",
    ConfigurationSaving = {
        Enabled = false
    }
