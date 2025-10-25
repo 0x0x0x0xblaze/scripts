@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
 local ScriptTab = Window:CreateTab("List Scripts", 4483362458)
 
 -- Section
-ScriptTab:CreateSection("🟢 TOTAL MAP: 18")
+ScriptTab:CreateSection("🟢 TOTAL MAP: 19")
 
 -- Script 1
 ScriptTab:CreateButton({
