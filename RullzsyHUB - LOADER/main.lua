@@ -13,7 +13,16 @@ local Window = Rayfield:CreateWindow({
 local ScriptTab = Window:CreateTab("List Scripts", 4483362458)
 
 -- Section
-ScriptTab:CreateSection("🟢 TOTAL MAP: 19")
+ScriptTab:CreateSection("🟢 TOTAL MAP: 20")
+
+-- Script New
+ScriptTab:CreateButton({
+    Name = "🟢 SADEWA CITY (NEW)",
+    Callback = function()
+        Rayfield:Notify({Title="Executing", Image="file", Content="Loading SADEWA CITY...", Duration=4})
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/0x0x0x0xblaze/scripts/refs/heads/main/RullzsyHUB%20-%20SADEWA%20CITYK/main.lua"))()
+    end
+})
 
 -- Script 1
 ScriptTab:CreateButton({
