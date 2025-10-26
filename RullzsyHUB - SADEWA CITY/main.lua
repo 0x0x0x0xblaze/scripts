@@ -1002,7 +1002,7 @@ local function startManualAutoWalkSequence(startCheckpoint)
             isManualMode = false
             Rayfield:Notify({
                 Title = "Auto Walk (Manual)",
-                Content = "Semua checkpoint selesai! silahkan masukan command di chat: !rejoin",
+                Content = "Semua checkpoint selesai! silahkan click UI Turunkan untuk balik ke basecamp.",
                 Duration = 4,
                 Image = "check-check"
             })
