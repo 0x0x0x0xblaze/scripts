@@ -20,6 +20,7 @@ local AccountTab = Window:CreateTab("Account", "user")
 local BypassTab = Window:CreateTab("Bypass", "shield")
 local AutoWalkTab = Window:CreateTab("Auto Walk", "bot")
 local ServerTab = Window:CreateTab("Finding Server", "globe")
+local PrivateServerTab = Window:CreateTab("Private Server", "globe")
 local VisualTab = Window:CreateTab("Visual", "layers")
 local RunAnimationTab = Window:CreateTab("Run Animation", "person-standing")
 local UpdateTab = Window:CreateTab("Update Script", "file")
@@ -1951,6 +1952,33 @@ ServerTab:CreateButton({
 })
 
 local Divider = ServerTab:CreateDivider()
+-------------------------------------------------------------
+-- SERVER FINDING - END
+-------------------------------------------------------------
+
+-------------------------------------------------------------
+-- PRIVATE SERVER
+-------------------------------------------------------------
+local Divider = PrivateServerTab:CreateDivider()
+
+local Paragraph = PrivateServerTab:CreateParagraph({
+   Title = "Private Server Menu",
+   Content = "🌐 Name Server: pvs_yahayuk" .. "\n" .. "🟢 Status: Online" .. "\n\n" .. "Cara Join Private Server:" .. "\n" .. "1. Click button: 📋 COPY LINK PRIVATE SERVER" .. "\n" .. "2. Jika sudah di copy silahkan buka browser kalian mau di pc / android / ios" .. "\n" .. "3. Paste link private server tadi terus tunggu beberapa saat sampe masuk roblox lagi."
+})
+
+local Button = PrivateServerTab:CreateButton({
+   Name = "📋 COPY LINK PRIVATE SERVER",
+   Callback = function()
+      Rayfield:Notify({
+            Title = "Private Server",
+            Content = "Fitur hanya tersedia di vip 14days / VIP-KING!",
+            Duration = 5,
+            Image = "ban"
+        })
+   end,
+})
+
+local Divider = PrivateServerTab:CreateDivider()
 -------------------------------------------------------------
 -- SERVER FINDING - END
 -------------------------------------------------------------
