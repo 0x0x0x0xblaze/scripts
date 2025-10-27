@@ -19,7 +19,7 @@ local Window = Rayfield:CreateWindow({
 local AccountTab = Window:CreateTab("Account", "user")
 local BypassTab = Window:CreateTab("Bypass", "shield")
 local AutoWalkTab = Window:CreateTab("Auto Walk", "bot")
-local ServerTab = Window:CreateTab("Server Finding", "globe")
+local ServerTab = Window:CreateTab("Private Server", "globe")
 local VisualTab = Window:CreateTab("Visual", "layers")
 local RunAnimationTab = Window:CreateTab("Run Animation", "person-standing")
 local UpdateTab = Window:CreateTab("Update Script", "file")
@@ -927,7 +927,7 @@ local function startManualAutoWalkSequence(startCheckpoint)
         if distance > 150 then
             Rayfield:Notify({
                 Title = "Auto Walk (Manual)",
-                Content = string.format("Terlalu jauh (%.0f studs). Maks 150 studs untuk memulai.", distance),
+                Content = string.format("Kamu berada di luar area checkpoint, silahkan untuk jalan/respawn dulu ke area checkpoint dalam jarak 100 studs, lalu jalankan lagi auto walk nya."),
                 Duration = 4,
                 Image = "alert-triangle"
             })
@@ -1110,19 +1110,12 @@ local function playSingleCheckpointFile(fileName, checkpointIndex)
     if distance > 150 then
         Rayfield:Notify({
             Title = "Auto Walk (Manual)",
-            Content = string.format("Terlalu jauh (%.0f studs)! Harus dalam jarak 100.", distance),
+            Content = string.format("Kamu berada di luar area checkpoint, silahkan untuk jalan/respawn dulu ke area checkpoint dalam jarak 100 studs, lalu jalankan lagi auto walk nya."),
             Duration = 4,
             Image = "alert-triangle"
         })
         return
     end
-
-    Rayfield:Notify({
-        Title = "Auto Walk (Manual)",
-        Content = string.format("Menuju ke titik awal... (%.0f studs)", distance),
-        Duration = 3,
-        Image = "walk"
-    })
 
     local humanoid = character:FindFirstChildOfClass("Humanoid")
     local moving = true
@@ -1133,13 +1126,6 @@ local function playSingleCheckpointFile(fileName, checkpointIndex)
         if reached then
             moving = false
             reachedConnection:Disconnect()
-
-            Rayfield:Notify({
-                Title = "Auto Walk (Manual)",
-                Content = "Sudah sampai di titik awal, mulai playback...",
-                Duration = 2,
-                Image = "play"
-            })
 
             task.wait(0.5)
             startPlayback(data, function()
@@ -1423,7 +1409,7 @@ local function createPauseRotateUI()
         if not isPlaying then
             Rayfield:Notify({
                 Title = "Auto Walk",
-                Content = "❌ Tidak ada auto walk yang sedang berjalan!",
+                Content = "Pastikan auto walk nya berjalan terlebih dahulu!",
                 Duration = 3,
                 Image = "alert-triangle"
             })
@@ -1438,7 +1424,7 @@ local function createPauseRotateUI()
             pauseResumeBtn.BackgroundColor3 = SUCCESS_COLOR
             Rayfield:Notify({
                 Title = "Auto Walk",
-                Content = "⏸️ Auto walk dijeda.",
+                Content = "Auto walk berhasil di pause.",
                 Duration = 2,
                 Image = "pause"
             })
@@ -1450,7 +1436,7 @@ local function createPauseRotateUI()
             pauseResumeBtn.BackgroundColor3 = BTN_COLOR
             Rayfield:Notify({
                 Title = "Auto Walk",
-                Content = "▶️ Auto walk dilanjutkan.",
+                Content = "Auto walk berhasil di resume.",
                 Duration = 2,
                 Image = "play"
             })
@@ -1462,7 +1448,7 @@ local function createPauseRotateUI()
         if not isPlaying then
             Rayfield:Notify({
                 Title = "Rotate",
-                Content = "❌ Auto walk harus berjalan terlebih dahulu!",
+                Content = "Auto walk harus berjalan terlebih dahulu!",
                 Duration = 3,
                 Image = "alert-triangle"
             })
@@ -1476,7 +1462,7 @@ local function createPauseRotateUI()
             rotateBtn.BackgroundColor3 = SUCCESS_COLOR
             Rayfield:Notify({
                 Title = "Rotate",
-                Content = "🔄 Mode rotate AKTIF (jalan mundur)",
+                Content = "Jalan mundur diaktifkan",
                 Duration = 2,
                 Image = "rotate-cw"
             })
@@ -1485,7 +1471,7 @@ local function createPauseRotateUI()
             rotateBtn.BackgroundColor3 = BTN_COLOR
             Rayfield:Notify({
                 Title = "Rotate",
-                Content = "🔄 Mode rotate NONAKTIF",
+                Content = "Jalan mundur dimatikan",
                 Duration = 2,
                 Image = "rotate-ccw"
             })
@@ -2066,65 +2052,25 @@ local CP26Toggle = AutoWalkTab:CreateToggle({
 -------------------------------------------------------------
 -- SERVER FINDING
 -------------------------------------------------------------
-local ServerSection = ServerTab:CreateSection("Server Menu")
+local Divider = ServerTab:CreateDivider()
 
--- Varibale Server
-local HttpService = game:GetService("HttpService")
-local PlaceId = game.PlaceId
-local Servers = {}
+local Paragraph = ServerTab:CreateParagraph({
+   Title = "Private Server Menu",
+   Content = "🌐 Name Server: pvs_atin" .. "\n" .. "🟢 Status: Online" .. "\n\n" .. "Cara Join Private Server:" .. "\n" .. "1. Click button: 📋 COPY LINK PRIVATE SERVER" .. "\n" .. "2. Jika sudah di copy silahkan buka browser kalian mau di pc / android / ios" .. "\n" .. "3. Paste link private server tadi terus tunggu beberapa saat sampe masuk roblox lagi."
+})
 
-local function FetchServers()
-    local Cursor = ""
-    Servers = {}
-
-    repeat
-        local URL = string.format("https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=Asc&limit=100%s", PlaceId, Cursor ~= "" and "&cursor="..Cursor or "")
-        local Response = game:HttpGet(URL)
-        local Data = HttpService:JSONDecode(Response)
-
-        for _, server in pairs(Data.data) do
-            table.insert(Servers, server)
-        end
-
-        Cursor = Data.nextPageCursor
-        task.wait(0.5)
-    until not Cursor
-
-    return Servers
-end
-
--- Function Join Server
-local function CreateServerButtons()
-    ServerTab:CreateParagraph({Title = "🔍 Mencari Server...", Content = "Tunggu sebentar sedang mencari data server..."})
-    local allServers = FetchServers()
-    ServerTab:CreateSection(" ")
-
-    for _, server in pairs(allServers) do
-        local playerCount = string.format("%d/%d", server.playing, server.maxPlayers)
-        local isSafe = server.playing <= (server.maxPlayers / 2)
-
-        local emoji = isSafe and "🟢" or "🟥"
-        local safety = isSafe and "Safe" or "No Safe"
-
-        local name = string.format("%s Server [%s] - %s", emoji, playerCount, safety)
-
-        ServerTab:CreateButton({
-            Name = name,
-            Callback = function()
-                game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceId, server.id)
-            end,
-        })
-    end
-
-    ServerTab:CreateParagraph({Title = "✅ Selesai!", Content = "Pilih salah satu server sepi di atas untuk join."})
-end
-
--- Toggle Start Find Server
-ServerTab:CreateButton({
-    Name = "🔄 START FIND SERVER",
-    Callback = function()
-        CreateServerButtons()
-    end,
+local Button = ServerTab:CreateButton({
+   Name = "📋 COPY LINK PRIVATE SERVER",
+   Callback = function()
+      local privateServerLink = "https://www.roblox.com/share?code=e53ee121d84e984791b714efdb840a09&type=Server"
+      setclipboard(privateServerLink)
+      Rayfield:Notify({
+         Title = "Private Server",
+         Content = "Link private server telah disalin ke clipboard!",
+         Duration = 4,
+		 Image = "clipboard",
+      })
+   end,
 })
 
 local Divider = ServerTab:CreateDivider()
