@@ -11,7 +11,6 @@ local Window = Rayfield:CreateWindow({
    Icon = "braces",
    LoadingTitle = "Created By RullzsyHUB",
    LoadingSubtitle = "Follow Tiktok: @rullzsy99",
-   Theme = "Amethyst",
 })
 
 -------------------------------------------------------------
@@ -20,7 +19,7 @@ local Window = Rayfield:CreateWindow({
 local AccountTab = Window:CreateTab("Account", "user")
 local BypassTab = Window:CreateTab("Bypass", "shield")
 local AutoWalkTab = Window:CreateTab("Auto Walk", "bot")
-local ServerTab = Window:CreateTab("Private Server", "globe")
+local ServerTab = Window:CreateTab("Finding Server", "globe")
 local VisualTab = Window:CreateTab("Visual", "layers")
 local RunAnimationTab = Window:CreateTab("Run Animation", "person-standing")
 local UpdateTab = Window:CreateTab("Update Script", "file")
@@ -1851,25 +1850,65 @@ local CP8Toggle = AutoWalkTab:CreateToggle({
 -------------------------------------------------------------
 -- SERVER FINDING
 -------------------------------------------------------------
-local Divider = ServerTab:CreateDivider()
+local ServerSection = ServerTab:CreateSection("Server Menu")
 
-local Paragraph = ServerTab:CreateParagraph({
-   Title = "Private Server Menu",
-   Content = "🌐 Name Server: pvs_pargoy" .. "\n" .. "🟢 Status: Online" .. "\n\n" .. "Cara Join Private Server:" .. "\n" .. "1. Click button: 📋 COPY LINK PRIVATE SERVER" .. "\n" .. "2. Jika sudah di copy silahkan buka browser kalian mau di pc / android / ios" .. "\n" .. "3. Paste link private server tadi terus tunggu beberapa saat sampe masuk roblox lagi."
-})
+-- Varibale Server
+local HttpService = game:GetService("HttpService")
+local PlaceId = game.PlaceId
+local Servers = {}
 
-local Button = ServerTab:CreateButton({
-   Name = "📋 COPY LINK PRIVATE SERVER",
-   Callback = function()
-      local privateServerLink = "https://www.roblox.com/share?code=3c31f4c736c380449fe1f8c0b9cee6d5&type=Server"
-      setclipboard(privateServerLink)
-      Rayfield:Notify({
-         Title = "Private Server",
-         Content = "Link private server telah disalin ke clipboard!",
-         Duration = 4,
-		 Image = "clipboard",
-      })
-   end,
+local function FetchServers()
+    local Cursor = ""
+    Servers = {}
+
+    repeat
+        local URL = string.format("https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=Asc&limit=100%s", PlaceId, Cursor ~= "" and "&cursor="..Cursor or "")
+        local Response = game:HttpGet(URL)
+        local Data = HttpService:JSONDecode(Response)
+
+        for _, server in pairs(Data.data) do
+            table.insert(Servers, server)
+        end
+
+        Cursor = Data.nextPageCursor
+        task.wait(0.5)
+    until not Cursor
+
+    return Servers
+end
+
+-- Function Join Server
+local function CreateServerButtons()
+    ServerTab:CreateParagraph({Title = "🔍 Mencari Server...", Content = "Tunggu sebentar sedang mencari data server..."})
+    local allServers = FetchServers()
+    ServerTab:CreateSection(" ")
+
+    for _, server in pairs(allServers) do
+        local playerCount = string.format("%d/%d", server.playing, server.maxPlayers)
+        local isSafe = server.playing <= (server.maxPlayers / 2)
+
+        local emoji = isSafe and "🟢" or "🟥"
+        local safety = isSafe and "Safe" or "No Safe"
+
+        local name = string.format("%s Server [%s] - %s", emoji, playerCount, safety)
+
+        ServerTab:CreateButton({
+            Name = name,
+            Callback = function()
+                game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceId, server.id)
+            end,
+        })
+    end
+
+    ServerTab:CreateParagraph({Title = "✅ Selesai!", Content = "Pilih salah satu server sepi di atas untuk join."})
+end
+
+-- Toggle Start Find Server
+ServerTab:CreateButton({
+    Name = "🔄 START FIND SERVER",
+    Callback = function()
+        CreateServerButtons()
+    end,
 })
 
 local Divider = ServerTab:CreateDivider()
